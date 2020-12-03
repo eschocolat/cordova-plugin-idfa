@@ -1,5 +1,6 @@
 #import "IdfaPlugin.h"
 #import <AdSupport/ASIdentifierManager.h>
+#import <AdSupport/AdSupport.h>
 #import <AppTrackingTransparency/AppTrackingTransparency.h>
 
 @implementation IdfaPlugin
@@ -44,6 +45,36 @@
             @"trackingTransparencyStatus": trackingTransparencyStatus
         }];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)requestTrackingAuthorization:(CDVInvokedUrlCommand *)command {
+    NSLog(@"requestTrackingAuthorization");
+    [self.commandDelegate runInBackground:^{
+        if (@available(iOS 14, *)) {
+            [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
+                NSString *trackingTransparencyStatus = @"NotAvailable";
+                switch (status) {
+                    case ATTrackingManagerAuthorizationStatusAuthorized:
+                        trackingTransparencyStatus = @"Authorized";
+                        break;
+
+                    case ATTrackingManagerAuthorizationStatusDenied:
+                        trackingTransparencyStatus = @"Denied";
+                        break;
+
+                    case ATTrackingManagerAuthorizationStatusRestricted:
+                        trackingTransparencyStatus = @"Restricted";
+                        break;
+
+                    default:
+                        trackingTransparencyStatus = @"NotDetermined";
+                        break;
+                }
+                CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:trackingTransparencyStatus];
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }];
+        }
     }];
 }
 
