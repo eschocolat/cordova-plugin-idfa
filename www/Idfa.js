@@ -2,15 +2,11 @@ var exec = require("cordova/exec");
 var PLUGIN_NAME = "Idfa";
 
 module.exports = {
-    getInfo: function() {
-        return new Promise(function(resolve, reject) {
-            exec(resolve, reject, PLUGIN_NAME, "getInfo", []);
-        });
+    getInfo: function(successCallback, errorCallback) {
+        return cordova.exec(successCallback, errorCallback, PLUGIN_NAME, "getInfo", []);
     },
 
-    requestTrackingAuthorization: function() {
-        return new Promise(function(resolve, reject) {
-            exec(resolve, reject, PLUGIN_NAME, "requestTrackingAuthorization", []);
-        });
+    requestTrackingAuthorization: function(successCallback, errorCallback) {
+        return cordova.exec(successCallback, errorCallback, PLUGIN_NAME, "requestTrackingAuthorization", []);
     }
 };
